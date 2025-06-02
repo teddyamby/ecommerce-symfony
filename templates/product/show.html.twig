@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block body %}
+    <div class="product-detail">
+        <div class="product-images">
+            {% if product.images|length > 0 %}
+                <div class="main-image">
+                    <img src="{{ asset('uploads/products/' ~ product.images.first().imageName) }}" alt="{{ product.name }}">
+                </div>
+                
+                {% if product.images|length > 1 %}
+                    <div class="thumbnail-images">
+                        {% for image in product.images %}
+                            <img src="{{ asset('uploads/products/' ~ image.imageName) }}" alt="{{ product.name }}">
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="main-image">
+                    <img src="{{ asset('images/placeholder-product.png') }}" alt="No image available">
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="product-info">
+            <h1>{{ product.name }}</h1>
+            <p class="price">{{ product.price|format_currency('USD') }}</p>
+            <p class="stock">{{ product.quantity > 0 ? 'In Stock' : 'Out of Stock' }}</p>
+            
+            <div class="product-description">
+                <h3>Description</h3>
+                <p>{{ product.description }}</p>
+            </div>
+            
+            {% if is_granted('ROLE_USER') %}
+                <div class="product-actions">
+                    <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token('add_to_cart') }}">
+                        <div class="quantity-selector">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="{{ product.quantity }}" class="quantity-input">
+                        </div>
+                        <button type="submit" class="btn btn-primary" {{ product.quantity == 0 ? 'disabled' : '' }}>
+                            {{ product.quantity == 0 ? 'Out of Stock' : 'Add to Cart' }}
+                        </button>
+                    </form>
+                    
+                    <a href="{{ path('app_product_contact_seller', {'id': product.id}) }}" class="btn btn-secondary">Contact Seller</a>
+                </div>
+            {% else %}
+                <p>Please <a href="{{ path('app_login') }}">login</a> to add this product to your cart.</p>
+            {% endif %}
+            
+            {% if is_granted('ROLE_ADMIN') %}
+                <div class="admin-actions">
+                    <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-edit">Edit</a>
+                    {{ include('product/_delete_form.html.twig') }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

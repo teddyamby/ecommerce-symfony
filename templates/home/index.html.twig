@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Home{% endblock %}
+
+{% block body %}
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Welcome to Our E-Commerce Store</h1>
+            <p>Discover amazing products at great prices</p>
+            <a href="{{ path('app_product_index') }}" class="btn btn-primary">Shop Now</a>
+        </div>
+    </section>
+    
+    <section class="featured-products">
+        <h2>Featured Products</h2>
+        
+        <div class="products-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    {% if product.images|length > 0 %}
+                        <img src="{{ asset('uploads/products/' ~ product.images.first().imageName) }}" alt="{{ product.name }}">
+                    {% else %}
+                        <img src="{{ asset('images/placeholder-product.png') }}" alt="No image available">
+                    {% endif %}
+                    
+                    <div class="product-info">
+                        <h3>{{ product.name }}</h3>
+                        <p class="price">{{ product.price|format_currency('USD') }}</p>
+                        <p>{{ product.description|u.truncate(100, '...') }}</p>
+                        
+                        <div class="product-actions">
+                            <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-secondary">View</a>
+                            
+                            {% if is_granted('ROLE_USER') %}
+                                <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="post">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('add_to_cart') }}">
+                                    <input type="number" name="quantity" value="1" min="1" class="quantity-input">
+                                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

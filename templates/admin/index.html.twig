@@ -1,0 +1,84 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block body %}
+    <div class="admin-container">
+        <h1>Admin Dashboard</h1>
+        
+        <div class="admin-stats">
+            <div class="stat-card">
+                <h3>Total Products</h3>
+                <p>{{ products|length }}</p>
+                <a href="{{ path('app_product_new') }}" class="btn btn-small">Add New</a>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Total Users</h3>
+                <p>{{ users|length }}</p>
+            </div>
+            
+            <div class="stat-card">
+                <h3>Recent Orders</h3>
+                <p>15</p>
+            </div>
+        </div>
+        
+        <div class="admin-sections">
+            <section class="products-section">
+                <h2>Recent Products</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products|slice(0, 5) %}
+                            <tr>
+                                <td>{{ product.name }}</td>
+                                <td>{{ product.price|format_currency('USD') }}</td>
+                                <td>{{ product.quantity }}</td>
+                                <td class="actions">
+                                    <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-small">View</a>
+                                    <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-small">Edit</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <a href="{{ path('app_product_index') }}" class="btn btn-secondary">View All Products</a>
+            </section>
+            
+            <section class="users-section">
+                <h2>Recent Users</h2>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users|slice(0, 5) %}
+                            <tr>
+                                <td>{{ user.firstName }} {{ user.lastName }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.createdAt|date('Y-m-d') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <a href="#" class="btn btn-secondary">View All Users</a>
+            </section>
+        </div>
+    </div>
+{% endblock %}

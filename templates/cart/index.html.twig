@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Your Shopping Cart{% endblock %}
+
+{% block body %}
+    <div class="cart-container">
+        <h1>Your Shopping Cart</h1>
+        
+        {% if cartItems|length > 0 %}
+            <div class="cart-items">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cartItems %}
+                            <tr>
+                                <td class="product-info">
+                                    {% if item.product.images|length > 0 %}
+                                        <img src="{{ asset('uploads/products/' ~ item.product.images.first().imageName) }}" alt="{{ item.product.name }}">
+                                    {% else %}
+                                        <img src="{{ asset('images/placeholder-product.png') }}" alt="No image available">
+                                    {% endif %}
+                                    <div>
+                                        <h3>{{ item.product.name }}</h3>
+                                        <p>{{ item.product.description|u.truncate(100, '...') }}</p>
+                                    </div>
+                                </td>
+                                <td class="price">{{ item.product.price|format_currency('USD') }}</td>
+                                <td class="quantity">
+                                    <form action="{{ path('app_cart_update', {'id': item.id}) }}" method="post">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('update_cart') }}">
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.quantity }}" class="quantity-input">
+                                        <button type="submit" class="btn-update">Update</button>
+                                    </form>
+                                </td>
+                                <td class="price">{{ (item.product.price * item.quantity)|format_currency('USD') }}</td>
+                                <td class="actions">
+                                    <form action="{{ path('app_cart_remove', {'id': item.id}) }}" method="post">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_cart_item') }}">
+                                        <button type="submit" class="btn-remove"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="cart-summary">
+                <div class="summary-card">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span>{{ total|format_currency('USD') }}</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>{{ total|format_currency('USD') }}</span>
+                    </div>
+                    
+                    <a href="{{ path('app_checkout') }}" class="btn btn-primary">Proceed to Checkout</a>
+                    <a href="{{ path('app_product_index') }}" class="btn btn-secondary">Continue Shopping</a>
+                </div>
+            </div>
+        {% else %}
+            <div class="empty-cart">
+                <p>Your cart is empty</p>
+                <a href="{{ path('app_product_index') }}" class="btn btn-primary">Start Shopping</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

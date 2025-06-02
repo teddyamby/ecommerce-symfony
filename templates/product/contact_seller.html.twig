@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact Seller - {{ product.name }}{% endblock %}
+
+{% block body %}
+    <div class="contact-seller">
+        <h1>Contact Seller About: {{ product.name }}</h1>
+        
+        <div class="product-preview">
+            {% if product.images|length > 0 %}
+                <img src="{{ asset('uploads/products/' ~ product.images.first().imageName) }}" alt="{{ product.name }}">
+            {% else %}
+                <img src="{{ asset('images/placeholder-product.png') }}" alt="No image available">
+            {% endif %}
+            <h3>{{ product.name }}</h3>
+            <p class="price">{{ product.price|format_currency('USD') }}</p>
+        </div>
+        
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.message) }}
+                {{ form_widget(form.message) }}
+                {{ form_errors(form.message) }}
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Send Message</button>
+            <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn btn-secondary">Cancel</a>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

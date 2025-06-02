@@ -1,0 +1,6 @@
+<div class="search-bar">
+    <form action="{{ path('app_home') }}" method="get">
+        <input type="text" name="q" placeholder="Search products..." value="{{ searchTerm ?? '' }}">
+        <button type="submit"><i class="fas fa-search"></i></button>
+    </form>
+</div>
